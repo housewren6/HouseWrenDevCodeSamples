@@ -1,0 +1,36 @@
+﻿########################################################################################################################
+
+#PowerShell scrit to create a directory named the current date, and call a WinSCP script 
+#to get files from a remote server. This process is scheduled and logged with the 
+#Windows Task Scheduler tool
+
+####get current date for folder name, create new folder with datename formatted
+$dateFolderName = Get-Date -Format "yyyyMMdd"
+New-Item "\{local\path}\$($dateFolderName)" -Type Directory
+	
+#####navigate to WinSCP folder with executables, run console command with script file, parameter of new directory
+cd "C:\Program Files (x86)\WinSCP"
+./winscp.com /ini=nul /script="{path\WinSCPScript}.txt" /parameter "\{local\path}\$($dateFolderName)"
+
+#####Keep the console open
+Read-Host
+
+
+########################################################################################################################
+
+#WinSCP script called by PowerShell script to get all files from remote server
+	
+echo on
+	
+#####open connection to website server
+open sftp://{user:remoteserver}/ -hostkey="{hostkey}"
+cd /
+	
+#####set local directory to parameter passed in = newly created date directory
+lcd "%1%"  
+	
+#####get file(s)
+get *.*
+	
+#####closes session and exits winSCP console
+exit

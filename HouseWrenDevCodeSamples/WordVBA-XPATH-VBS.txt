@@ -1,0 +1,41 @@
+﻿'Word VBA check box
+Set rng = WordApplication.ActiveDocument.Bookmarks(Bookmark).Range
+Call WordApplication.ActiveDocument.Bookmarks(Bookmark).Range.Select()
+
+'To return _____[_]AM[_]PM FormField Checkboxes
+Set PMFieldCkbx = WordApplication.Selection.FormFields.Add( rng, wdFieldFormCheckBox )
+With PMFieldCkbx
+       .Name = "PMFieldCkbx" 
+End With
+
+Set AMFieldCkbx = WordApplication.Selection.FormFields.Add( rng, wdFieldFormCheckBox )
+With AMFieldCkbx
+       .Name = "AMFieldCkbx" 
+End With 
+
+Call AMFieldCkbx.Range.InsertBefore("_________")
+Call AMFieldCkbx.Range.InsertAfter("AM")
+Call PMFieldCkbx.Range.InsertAfter("PM")
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'Loop through XML nodes to return name and dob 
+Dim oNameNode : Set oNameNode = Nothing
+Dim oDOBNode : Set oDOBNode = Nothing
+Dim oListNodes : Set oListNodes = XMLdoc.SelectNodes("/Path/To/People/Person[Type='Person']")
+
+For Each oNode in oListNodes
+	Set oNameNode = oNode.SelectSingleNode("Name")
+	Set oDOBNode = oNode.SelectSingleNode("DOB")
+
+	
+	If Not oNameNode Is Nothing Then 
+		If Not oDOBNode Is Nothing Then 
+			ReturnData = ReturnData & oNameNode.text & " -- " & oDOBNode.text & VbCrLf
+		Else			
+			ReturnData = ReturnData & oNameNode.text & " -- _________" & VbCrLf
+		End If
+	Else
+		ReturnData = "_________________"
+	End If
+Next
+
